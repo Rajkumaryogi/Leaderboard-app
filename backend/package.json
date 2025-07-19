@@ -5,5 +5,16 @@
     "express": "^5.1.0",
     "mongoose": "^8.16.4",
     "socket.io": "^4.8.1"
-  }
+  },
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Yogi",
+  "license": "ISC",
+  "description": "Real-Time Leaderboard Application"
 }
