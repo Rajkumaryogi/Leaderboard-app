@@ -11,7 +11,7 @@ export function SocketProvider({ children }) {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:8000');
+    const newSocket = io('https://leaderboard-app-production-95ce.up.railway.app');
     setSocket(newSocket);
 
     return () => newSocket.close();

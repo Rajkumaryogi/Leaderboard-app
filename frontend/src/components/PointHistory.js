@@ -7,7 +7,7 @@ function PointHistory({ userId }) {
   
   useEffect(() => {
     if (userId) {
-      fetch(`http://localhost:8000/api/points/${userId}/history`)
+      fetch(`https://leaderboard-app-production-95ce.up.railway.app/api/points/${userId}/history`)
         .then(res => res.json())
         .then(data => setHistory(data));
     }

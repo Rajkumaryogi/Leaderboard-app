@@ -17,14 +17,14 @@ function App() {
   }, []);
 
   const fetchUsers = () => {
-    fetch('http://localhost:8000/api/users')
+    fetch('https://leaderboard-app-production-95ce.up.railway.app/api/users')
       .then(res => res.json())
       .then(data => setUsers(data));
   };
 
   const handleClaimPoints = (userId) => {
     setIsClaiming(true);
-    fetch(`http://localhost:8000/api/points/${userId}/claim`, {
+    fetch(`https://leaderboard-app-production-95ce.up.railway.app/api/points/${userId}/claim`, {
       method: 'POST'
     })
       .then(res => res.json())
@@ -36,7 +36,7 @@ function App() {
   };
 
   const handleAddUser = (name) => {
-    fetch('http://localhost:8000/api/users', {
+    fetch('https://leaderboard-app-production-95ce.up.railway.app/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name })
