@@ -5,13 +5,8 @@
       "src": "server.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": [
-          "socket/**",
-          "models/**",
-          "controllers/**",
-          "routes/**",
-          "middleware/**"
-        ]
+        "zeroConfig": true,
+        "includeFiles": ["**/*"] 
       }
     }
   ],
