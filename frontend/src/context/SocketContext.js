@@ -11,10 +11,13 @@ export function SocketProvider({ children }) {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const newSocket = io('https://leaderboard-app-production-95ce.up.railway.app');
-    setSocket(newSocket);
+    const SOCKET_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+    const newSocket = io(SOCKET_URL, {
+      transports: ['websocket'], // Optional: fallback disable
+    });
 
-    return () => newSocket.close();
+    setSocket(newSocket);
+    return () => newSocket.disconnect();
   }, []);
 
   return (
