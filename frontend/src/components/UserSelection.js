@@ -29,7 +29,7 @@ function UserSelection({ users, selectedUserId, onSelectUser, onAddUser }) {
         <option value="">Select a user</option>
         {users.map(user => (
           <option key={user._id} value={user._id}>
-            {user.name} (Points: {user.totalPoints})
+            {user.name} (Starting Points: {user.totalPoints})
           </option>
         ))}
       </select>
