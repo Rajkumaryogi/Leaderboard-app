@@ -1,52 +1,43 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSocket } from '../context/SocketContext';
 import RankCard from './RankCard';
 import '../styles.css';
 
 function Leaderboard({ users: initialUsers }) {
   const socket = useSocket();
-  const [leaderboardUsers, setLeaderboardUsers] = useState(() => 
-    initialUsers.map((user, index) => ({ ...user, rank: index + 1 }))
-  );
+  const [leaderboardUsers, setLeaderboardUsers] = useState(initialUsers);
 
-  // Function to update ranks whenever points change
-  const updateRanks = useCallback((users) => {
-    const sorted = [...users].sort((a, b) => b.totalPoints - a.totalPoints);
-    return sorted.map((user, index) => ({ ...user, rank: index + 1 }));
-  }, []);
-
-  // Handle initial users and prop updates
+  // Set initial leaderboard with backend ranks
   useEffect(() => {
-    setLeaderboardUsers(updateRanks(initialUsers));
-  }, [initialUsers, updateRanks]);
+    setLeaderboardUsers(initialUsers);
+  }, [initialUsers]);
 
   // Socket event handlers
   useEffect(() => {
     if (!socket) return;
 
-    const handlePointsUpdate = ({ userId, totalPoints }) => {
+    // Handle leaderboard update (from backend)
+    const handleLeaderboardUpdate = ({ users }) => {
+      // console.log("Received ranked users from backend:", users);
+      setLeaderboardUsers(users); // Use backend-ranked list directly
+    };
+
+    // Handle new user addition
+    const handleNewUser = (newUser) => {
       setLeaderboardUsers(prev => {
-        const updated = prev.map(user => 
-          user._id === userId ? { ...user, totalPoints } : user
-        );
-        return updateRanks(updated);
+        const updated = [...prev, { ...newUser, totalPoints: 0 }];
+        return updated; // backend will emit a fresh update anyway
       });
     };
 
-    const handleNewUser = (newUser) => {
-      setLeaderboardUsers(prev => 
-        updateRanks([...prev, { ...newUser, totalPoints: 0 }])
-      );
-    };
-
-    socket.on('points-updated', handlePointsUpdate);
+    socket.on('leaderboard-update', handleLeaderboardUpdate);
     socket.on('user-added', handleNewUser);
 
     return () => {
-      socket.off('points-updated', handlePointsUpdate);
+      socket.off('leaderboard-update', handleLeaderboardUpdate);
       socket.off('user-added', handleNewUser);
     };
-  }, [socket, updateRanks]);
+  }, [socket]);
 
   // Separate top 3 for podium and others for table
   const topThree = leaderboardUsers.slice(0, 3);
@@ -62,7 +53,7 @@ function Leaderboard({ users: initialUsers }) {
           <RankCard 
             key={user._id} 
             user={user} 
-            highlight={user._id === socket?.id} // Highlight current user if needed
+            highlight={user._id === socket?.id} // Optional: highlight current user
           />
         ))}
       </div>
@@ -83,9 +74,8 @@ function Leaderboard({ users: initialUsers }) {
               className={user.rank <= 3 ? `top-${user.rank}` : ''}
             >
               <td>{user.rank}</td>
-              <td>{maskName(user.name)}</td>
+              <td>{user.name}</td>
               <td>{user.totalPoints.toLocaleString()}</td>
-              
             </tr>
           ))}
         </tbody>
@@ -94,7 +84,7 @@ function Leaderboard({ users: initialUsers }) {
   );
 }
 
-// Improved name masking function
+// Masking function for user name
 function maskName(name) {
   if (!name) return '';
   if (name.length <= 2) return name;
