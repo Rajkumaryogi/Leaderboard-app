@@ -4,6 +4,7 @@ import ClaimButton from './components/ClaimButton';
 import Leaderboard from './components/Leaderboard';
 import PointHistory from './components/PointHistory';
 import { SocketProvider } from './context/SocketContext';
+import api from './api';
 import './styles.css';
 
 function App() {
@@ -17,30 +18,31 @@ function App() {
   }, []);
 
   const fetchUsers = () => {
-    fetch('https://leaderboard-app-production-95ce.up.railway.app/api/users')
-      .then(res => res.json())
-      .then(data => setUsers(data));
+    api.get('/api/users')
+      .then(res => {
+        setUsers(res.data);
+        // console.log('Fetched Users:', res.data);
+      })
+      .catch(err => console.error('Failed to fetch users:', err));
   };
 
   const handleClaimPoints = (userId) => {
     setIsClaiming(true);
-    fetch(`https://leaderboard-app-production-95ce.up.railway.app/api/points/${userId}/claim`, {
-      method: 'POST'
-    })
-      .then(res => res.json())
-      .then(data => {
-        setLastClaim(data);
+    api.post(`/api/points/${userId}/claim`)
+      .then(res => {
+        setLastClaim(res.data);
         setIsClaiming(false);
       })
-      .catch(() => setIsClaiming(false));
+      .catch(err => {
+        console.error('Claim failed:', err);
+        setIsClaiming(false);
+      });
   };
 
   const handleAddUser = (name) => {
-    fetch('https://leaderboard-app-production-95ce.up.railway.app/api/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name })
-    }).then(() => fetchUsers());
+    api.post('/api/users', { name })
+      .then(() => fetchUsers())
+      .catch(err => console.error('Add user failed:', err));
   };
 
   return (
