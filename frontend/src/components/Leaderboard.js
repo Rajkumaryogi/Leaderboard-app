@@ -85,15 +85,15 @@ function Leaderboard({ users: initialUsers }) {
 }
 
 // Masking function for user name
-function maskName(name) {
-  if (!name) return '';
-  if (name.length <= 2) return name;
+// function maskName(name) {
+//   if (!name) return '';
+//   if (name.length <= 2) return name;
   
-  const first = name[0];
-  const last = name[name.length - 1];
-  const stars = '*'.repeat(Math.min(3, name.length - 2));
+//   const first = name[0];
+//   const last = name[name.length - 1];
+//   const stars = '*'.repeat(Math.min(3, name.length - 2));
   
-  return `${first}${stars}${last}`;
-}
+//   return `${first}${stars}${last}`;
+// }
 
 export default Leaderboard;
