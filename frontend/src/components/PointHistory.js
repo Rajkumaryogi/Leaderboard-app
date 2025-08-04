@@ -1,33 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useSocket } from '../context/SocketContext';
+import api from '../api';
 
 function PointHistory({ userId }) {
   const [history, setHistory] = useState([]);
   const socket = useSocket();
   
+  // Fetch point history from backend
   useEffect(() => {
     if (userId) {
-      fetch(`https://leaderboard-app-production-95ce.up.railway.app/api/points/${userId}/history`)
-        .then(res => res.json())
-        .then(data => setHistory(data));
+      api.get(`/api/points/${userId}/history`)
+        .then(res => setHistory(res.data))
+        .catch(err => {
+          console.error('Failed to fetch history:', err);
+        });
     }
   }, [userId]);
 
+  // Listen for live point updates
   useEffect(() => {
     if (!socket || !userId) return;
 
-    socket.on('points-updated', ({ userId: updatedUserId, pointsAdded }) => {
+    const handlePointsUpdate = ({ userId: updatedUserId, pointsAdded }) => {
       if (updatedUserId === userId) {
-        setHistory(prev => [{
-          points: pointsAdded,
-          createdAt: new Date().toISOString(),
-          userId: { _id: userId }
-        }, ...prev]);
+        setHistory(prev => [
+          {
+            points: pointsAdded,
+            createdAt: new Date().toISOString(),
+            userId: { _id: userId }
+          },
+          ...prev,
+        ]);
       }
-    });
+    };
+
+    socket.on('points-updated', handlePointsUpdate);
 
     return () => {
-      socket.off('points-updated');
+      socket.off('points-updated', handlePointsUpdate);
     };
   }, [socket, userId]);
 
