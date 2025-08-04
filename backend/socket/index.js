@@ -5,7 +5,7 @@ let io;
 const setupWebsocket = (server) => {
   io = socketio(server, {
     cors: {
-      origin: "https://leaderboard-app-production-95ce.up.railway.app",
+      origin: ["http://localhost:3000", "https://leaderboard-app-ochre-omega.vercel.app"],
       methods: ["GET", "POST"]
     }
   });
