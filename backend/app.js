@@ -10,7 +10,7 @@ const app = express();
 // Middleware
 const allowedOrigins = [
   "http://localhost:3000", // local dev
-  "https://leaderboard-app-ochre-omega.vercel.app" // your deployed frontend
+  process.env.FRONTEND_ORIGIN // your deployed frontend
 ];
 
 app.use(cors({
