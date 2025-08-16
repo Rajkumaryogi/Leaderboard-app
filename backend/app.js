@@ -8,7 +8,17 @@ const { getIo } = require('./socket');
 const app = express();
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:3000", // local dev
+  "https://leaderboard-app-ochre-omega.vercel.app" // your deployed frontend
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Database connection
